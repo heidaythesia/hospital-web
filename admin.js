@@ -4,7 +4,7 @@
  */
 
 const IS_PROD = false; // Toggle to true before deploying to Vercel/Netlify
-const API_BASE = IS_PROD ? 'https://nexushealth-api.azurewebsites.net' : 'http://localhost:5034';
+const API_BASE = 'https://uninstall-palpitate-reprint.ngrok-free.dev';
 
 // ─── UTILITIES ──────────────────────────────────────────────
 
@@ -20,7 +20,10 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     const token = getToken();
     const opts = {
         method,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+        }
     };
     if (token) opts.headers['Authorization'] = `Bearer ${token}`;
     if (body) opts.body = JSON.stringify(body);
@@ -63,24 +66,30 @@ function emptyRow(cols, message = 'No data available.', icon = 'fa-inbox') {
 
 function formatSmartDate(dateStr) {
     if (!dateStr) return 'N/A';
-    if (!dateStr.endsWith('Z')) dateStr += 'Z';
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return 'Invalid Date';
     const now = new Date();
     const today     = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const tomorrow  = new Date(today); tomorrow.setDate(today.getDate() + 1);
     const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
     const apptDay   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    if (apptDay.getTime() === today.getTime())     return `Today at ${time}`;
-    if (apptDay.getTime() === tomorrow.getTime())  return `Tomorrow at ${time}`;
-    if (apptDay.getTime() === yesterday.getTime()) return `Yesterday at ${time}`;
-    return d.toLocaleDateString() + ' ' + time;
+    if (apptDay.getTime() === today.getTime())     return `<span class="date-text">Today at</span> <span class="time-text">${time}</span>`;
+    if (apptDay.getTime() === tomorrow.getTime())  return `<span class="date-text">Tomorrow at</span> <span class="time-text">${time}</span>`;
+    if (apptDay.getTime() === yesterday.getTime()) return `<span class="date-text">Yesterday at</span> <span class="time-text">${time}</span>`;
+    
+    // Fallback: padded date for alignment
+    const dp = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    return `<span class="date-text">${dp}</span> <span class="time-text">${time}</span>`;
 }
 
 function formatDate(dateStr) {
-    if (!dateStr.endsWith('Z')) dateStr += 'Z';
+    if (!dateStr) return 'N/A';
     const d = new Date(dateStr);
-    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (isNaN(d.getTime())) return 'Invalid Date';
+    const dp = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    const tp = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `<span class="date-text">${dp}</span> <span class="time-text">${tp}</span>`;
 }
 
 function statusBadge(status) {
@@ -220,6 +229,7 @@ const SIDEBAR_CONFIG = {
         { id: 'nav-patient-dashboard', icon: 'fa-th-large', label: 'Dashboard', page: 'patient-dashboard' },
         { id: 'nav-patient-appointments', icon: 'fa-calendar-check', label: 'My Appointments', page: 'patient-appointments' },
         { id: 'nav-patient-prescriptions', icon: 'fa-prescription-bottle-alt', label: 'My Prescriptions', page: 'patient-prescriptions' },
+        { id: 'nav-patient-history', icon: 'fa-history', label: 'Appointment History', page: 'patient-history' },
     ]
 };
 
@@ -249,6 +259,7 @@ const PAGE_MAP = {
     'patient-dashboard':    { section: 'patientDashboardView',     fetcher: fetchPatientDashboard },
     'patient-appointments': { section: 'section-patient-appointments', fetcher: fetchPatientAppointments },
     'patient-prescriptions':{ section: 'section-patient-prescriptions', fetcher: fetchPatientPrescriptions },
+    'patient-history':      { section: 'section-patient-history',    fetcher: fetchPatientHistory },
 };
 
 window.setActivePage = function(page, clickedNav) {
@@ -661,15 +672,10 @@ async function handlePrescription(e) {
 // ─── PATIENT FUNCTIONS ──────────────────────────────────────
 
 let _patientAppointmentsCache = []; // cache for KPI computation
+let _healthChart = null;
 
 async function fetchPatientDashboard() {
-    showSkeleton('patient-dash-appointments-tbody', 4);
-
-    const [apptData, rxData] = await Promise.all([
-        apiCall('/api/Patient/my-appointments'),
-        apiCall('/api/Prescription/my-prescriptions')
-    ]);
-
+    const apptData = await apiCall('/api/Patient/my-appointments');
     const appts = Array.isArray(apptData) ? apptData : [];
     _patientAppointmentsCache = appts;
 
@@ -678,12 +684,96 @@ async function fetchPatientDashboard() {
     document.getElementById('kpi-pat-upcoming').innerText = appts.filter(a => a.status === 'Booked').length;
     document.getElementById('kpi-pat-completed').innerText = appts.filter(a => a.status === 'Completed').length;
 
-    // Recent 5 appointments
-    const tbody = document.getElementById('patient-dash-appointments-tbody');
-    if (appts.length === 0) { tbody.innerHTML = emptyRow(4, 'No appointments yet. <a href="#" onclick="openBookingModal()" style="color:var(--primary);text-decoration:underline">Book one now!</a>'); return; }
-    tbody.innerHTML = appts.slice(0, 5).map(a =>
-        `<tr><td style="font-weight:500">${a.doctorName}</td><td>${a.specialization || 'General'}</td><td>${formatDate(a.appointmentDate)}</td><td>${statusBadge(a.status)}</td></tr>`
-    ).join('');
+    // Render Chart (Default: 6m)
+    renderPatientHealthChart('6m');
+}
+
+window.changeHealthRange = function(range, btn) {
+    // Update active button UI
+    const container = btn.closest('.chart-controls');
+    container.querySelectorAll('.btn-mini').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    renderPatientHealthChart(range);
+};
+
+function renderPatientHealthChart(range = '6m') {
+    const ctx = document.getElementById('patientHealthChart');
+    if (!ctx) return;
+    if (_healthChart) _healthChart.destroy();
+
+    let labels = [];
+    let healthScore = [];
+
+    // Define data based on range
+    if (range === 'weekly') {
+        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        healthScore = [85, 88, 86, 84, 89, 92, 91];
+    } else if (range === '3m') {
+        labels = ['Feb', 'Mar', 'Apr'];
+        healthScore = [78, 88, 92];
+    } else if (range === '6m') {
+        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        healthScore = [82, 78, 88, 92, 84, 95];
+    } else if (range === '12m') {
+        labels = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        healthScore = [80, 82, 75, 85, 88, 90, 82, 78, 88, 92, 84, 95];
+    }
+
+    // Create Gradient
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');   // Green (Top)
+    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.05)'); // Red (Bottom)
+
+    _healthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Overall Health Index',
+                data: healthScore,
+                borderColor: '#22C55E',
+                borderWidth: 3,
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#22C55E',
+                pointBorderWidth: 2,
+                pointHoverRadius: 7,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) { return `Health Score: ${context.parsed.y}%`; }
+                    }
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: false, 
+                    min: 60, 
+                    max: 100,
+                    grid: { color: '#f1f5f9' },
+                    ticks: { 
+                        callback: value => value + '%',
+                        stepSize: 10,
+                        font: { family: 'Inter', weight: '500' }
+                    }
+                },
+                x: { grid: { display: false }, ticks: { font: { family: 'Inter' } } }
+            }
+        }
+    });
 }
 
 async function fetchPatientAppointments() {
@@ -691,8 +781,27 @@ async function fetchPatientAppointments() {
     const data = await apiCall('/api/Patient/my-appointments');
     const tbody = document.getElementById('patient-appointments-tbody');
     const arr = Array.isArray(data) ? data : [];
-    if (arr.length === 0) { tbody.innerHTML = emptyRow(4, 'No appointments yet. Book one from the dashboard!', 'fa-calendar-plus'); return; }
-    tbody.innerHTML = arr.map(a =>
+    // Show ONLY pending (Booked) appointments
+    const pending = arr.filter(a => a.status === 'Booked');
+    if (pending.length === 0) { tbody.innerHTML = emptyRow(4, 'No pending appointments. Book one from the dashboard!', 'fa-calendar-plus'); return; }
+    tbody.innerHTML = pending.map(a =>
+        `<tr><td style="font-weight:500">${a.doctorName}</td><td>${a.specialization || 'General'}</td><td>${formatSmartDate(a.appointmentDate)}</td><td>${statusBadge(a.status)}</td></tr>`
+    ).join('');
+}
+
+async function fetchPatientHistory() {
+    showSkeleton('patient-history-tbody', 4);
+    const data = await apiCall('/api/Patient/my-appointments');
+    const tbody = document.getElementById('patient-history-tbody');
+    const arr = Array.isArray(data) ? data : [];
+    // Show Completed and Cancelled
+    const history = arr.filter(a => a.status === 'Completed' || a.status === 'Cancelled');
+    
+    // Sort descending (latest at the top)
+    history.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+    if (history.length === 0) { tbody.innerHTML = emptyRow(4, 'No past appointments found.', 'fa-history'); return; }
+    tbody.innerHTML = history.map(a =>
         `<tr><td style="font-weight:500">${a.doctorName}</td><td>${a.specialization || 'General'}</td><td>${formatSmartDate(a.appointmentDate)}</td><td>${statusBadge(a.status)}</td></tr>`
     ).join('');
 }
@@ -753,7 +862,7 @@ async function handleBooking(e) {
 
     const payload = {
         doctorId: parseInt(document.getElementById('bookingDoctorId').value),
-        appointmentDate: new Date(document.getElementById('bookingDate').value).toISOString()
+        appointmentDate: document.getElementById('bookingDate').value
     };
 
     const result = await apiCall('/api/Patient/book', 'POST', payload);

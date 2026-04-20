@@ -4,7 +4,10 @@ const api = {
     login: async (email, password) => {
         const res = await fetch(`${API_BASE_URL}/Auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+            },
             body: JSON.stringify({ email, password })
         });
         if (!res.ok) {
@@ -18,7 +21,8 @@ const api = {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.getToken()}`
+                'Authorization': `Bearer ${auth.getToken()}`,
+                'ngrok-skip-browser-warning': 'true'
             },
             body: JSON.stringify({ doctorId: parseInt(doctorId), appointmentDate: date })
         });
@@ -29,20 +33,28 @@ const api = {
         return await res.json();
     },
     getDoctors: async () => {
-        const res = await fetch(`${API_BASE_URL}/Patient/doctors`);
+        const res = await fetch(`${API_BASE_URL}/Patient/doctors`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         if (!res.ok) throw new Error('Failed to fetch doctors');
         return await res.json();
     },
     getDoctorAppointments: async () => {
         const res = await fetch(`${API_BASE_URL}/Doctor/appointments`, {
-            headers: { 'Authorization': `Bearer ${auth.getToken()}` }
+            headers: { 
+                'Authorization': `Bearer ${auth.getToken()}`,
+                'ngrok-skip-browser-warning': 'true'
+            }
         });
         if (!res.ok) throw new Error('Unauthorized');
         return await res.json();
     },
     getPatientPrescriptions: async () => {
         const res = await fetch(`${API_BASE_URL}/Prescription/my-prescriptions`, {
-            headers: { 'Authorization': `Bearer ${auth.getToken()}` }
+            headers: { 
+                'Authorization': `Bearer ${auth.getToken()}`,
+                'ngrok-skip-browser-warning': 'true'
+            }
         });
         if (!res.ok) throw new Error('Unauthorized');
         return await res.json();
@@ -52,7 +64,8 @@ const api = {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.getToken()}`
+                'Authorization': `Bearer ${auth.getToken()}`,
+                'ngrok-skip-browser-warning': 'true'
             },
             body: JSON.stringify(payload)
         });
