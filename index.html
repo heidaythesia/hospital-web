@@ -46,10 +46,35 @@
                 </ul>
             </nav>
             <div class="header-actions" id="headerActions">
-                <button class="btn btn-primary" onclick="handleBookAppointment()">Book Appointment</button>
+                <button class="btn btn-primary nav-appointment-btn" onclick="handleBookAppointment()">Book Appointment</button>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <i class="fas fa-hospital-symbol"></i>
+                    <span>Nexus<strong>Health</strong></span>
+                </div>
+                <button class="close-mobile-menu" id="closeMobileMenu">&times;</button>
+            </div>
+            <ul class="mobile-nav-links">
+                <li><a href="#about">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="doctors.html">Doctors</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="divider"></li>
+                <li><a href="login.html?role=patient" class="mobile-auth-link">Patient Portal</a></li>
+                <li><a href="login.html?role=staff" class="mobile-auth-link">Staff Login</a></li>
+            </ul>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section id="about" class="hero">

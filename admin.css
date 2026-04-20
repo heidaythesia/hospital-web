@@ -643,10 +643,12 @@ button {
 .delay-4 { animation-delay: 0.4s; }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+    .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -655,60 +657,46 @@ button {
         height: 100%;
         transform: translateX(-100%);
         box-shadow: var(--shadow-lg);
+        background: var(--surface);
     }
     
     .sidebar.mobile-open {
         transform: translateX(0);
+        width: 280px;
     }
-    
-    .search-bar {
-        display: none;
+
+    .main-content {
+        width: 100%;
     }
-    
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-    
+
     .topbar {
         padding: 0 var(--space-2);
     }
     
-    /* Mobile Bottom Nav Simulation for smaller screens */
-    .mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: var(--surface);
-        box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-        z-index: 100;
-        justify-content: space-around;
-        padding: 12px 0;
-        border-top: 1px solid var(--border-color);
-    }
-    
-    .mobile-nav-item {
-        display: flex;
+    .search-bar { display: none; }
+
+    .page-header {
         flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        color: var(--text-muted);
-        font-size: 0.75rem;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: var(--space-3);
     }
-    
-    .mobile-nav-item.active {
-        color: var(--primary);
+
+    .kpi-grid { 
+        grid-template-columns: 1fr; 
+        gap: 12px;
     }
-    
-    .mobile-nav-item i {
-        font-size: 1.2rem;
+
+    .glass-card {
+        padding: 20px;
+    }
+
+    .kpi-value {
+        font-size: 1.75rem;
     }
     
     .app-container {
-        padding-bottom: 60px; /* Space for bottom nav */
+        flex-direction: column;
     }
 }
 

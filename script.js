@@ -54,6 +54,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Run Auth UI Update
     updateAuthUI();
+
+    // Mobile Menu Toggle Logic
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const closeMobileMenu = document.getElementById('closeMobileMenu');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileNavOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
+    }
+
+    if (closeMobileMenu) {
+        closeMobileMenu.addEventListener('click', () => {
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+
+    // Close menu when clicking any link
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Close menu when clicking the backdrop
+    mobileNavOverlay.addEventListener('click', (e) => {
+        if (e.target === mobileNavOverlay) {
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
 });
 
 // Authentication UI Logic

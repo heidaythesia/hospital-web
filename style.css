@@ -463,7 +463,117 @@ ul {
     font-size: 0.875rem;
 }
 
-/* Responsive */
+/* Responsive Typography & Spacing */
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    html { font-size: 14px; }
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--text-main);
+    padding: 8px;
+    border-radius: var(--border-radius-md);
+}
+
+.mobile-nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-content {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 350px;
+    height: 100%;
+    background: var(--surface);
+    padding: 32px;
+    transition: right var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-nav-overlay.active .mobile-nav-content {
+    right: 0;
+}
+
+.mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+}
+
+.close-mobile-menu {
+    font-size: 2rem;
+    color: var(--text-muted);
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.mobile-nav-links a {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.mobile-nav-links .divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 0;
+}
+
+.mobile-auth-link {
+    color: var(--primary) !important;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    .main-nav, .nav-appointment-btn { display: none; }
+    .mobile-menu-toggle { display: block; }
+    
+    .header-content {
+        height: 72px;
+        padding: 0 20px;
+    }
+
+    .hero-content h1 {
+        font-size: 2.75rem;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 64px 0;
+    }
+}
+
+/* Existing Responsive ... */
 @media (max-width: 768px) {
     .top-bar { display: none; }
     
