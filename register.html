@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusHealth | Create Account</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="register-page">
+
+    <div class="register-card" style="position: relative;">
+        <a href="login.html" style="position: absolute; top: 20px; left: 20px; width: 36px; height: 36px; background-color: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            <span>Nexus<strong>Health</strong></span>
+        </div>
+        
+        <h2>Join NexusHealth</h2>
+        <p style="color: #64748b; margin-bottom: 25px;">Create your patient account to book appointments.</p>
+
+        <form id="registerForm">
+            <div class="form-grid">
+                <!-- User Account Info -->
+                <div class="form-group full-width">
+                    <label for="userName">Full Name</label>
+                    <input type="text" id="userName" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="john@example.com">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Min 6 characters">
+                </div>
+
+                <!-- Patient Profile Info -->
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" required placeholder="John">
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" required placeholder="Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register" id="regBtn">Create Account</button>
+            <div id="message"></div>
+            
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">
+                Already have an account? <a href="login.html" style="color: #2563eb; font-weight: 600;">Sign In</a>
+            </p>
+        </form>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>
