@@ -10,20 +10,30 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         
         // Prepare UI state
-        regBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
-        regBtn.disabled = true;
-        messageDiv.style.display = 'none';
-        messageDiv.className = '';
+        const password = document.getElementById('password').value;
+        
+        // 🔥 VALIDATION: Password must be at least 6 characters
+        if (password.length < 6) {
+            messageDiv.textContent = '❌ Password must be at least 6 digits or characters long.';
+            messageDiv.className = 'msg-error';
+            messageDiv.style.display = 'block';
+            regBtn.innerHTML = 'Create Account';
+            regBtn.disabled = false;
+            document.getElementById('password').style.borderColor = '#ef4444';
+            return; // Stop here
+        } else {
+            document.getElementById('password').style.borderColor = '#e2e8f0';
+        }
 
         // Collect form data
         const payload = {
             userName: document.getElementById('userName').value.trim(),
             email: document.getElementById('email').value.trim(),
-            password: document.getElementById('password').value,
+            password: password,
             roleId: 3, // Enforced as Patient
             firstName: document.getElementById('firstName').value.trim(),
             lastName: document.getElementById('lastName').value.trim(),
-            dateOfBirth: document.getElementById('dateOfBirth').value,
+            DOB: document.getElementById('dateOfBirth').value, // 🔥 Fixed: Backend expects 'DOB'
             gender: document.getElementById('gender').value
         };
 
