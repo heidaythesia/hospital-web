@@ -1,10 +1,6 @@
-/* ==========================================================================
-   NexusHealth - Elite Public Website Theme
-   (Aligned with Admin Dashboard Design System)
-   ========================================================================== */
-
-/* CSS Reset & Variables */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+html {
+    scroll-behavior: smooth;
+}
 
 :root {
     /* Elite Color Palette */

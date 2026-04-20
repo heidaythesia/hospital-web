@@ -5,12 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('errorMessage');
     const loginBtn = document.getElementById('loginBtn');
 
-    const IS_PROD = false; // Toggle to true before deploying to Vercel/Netlify
-    const API_BASE = IS_PROD ? 'https://nexushealth-api.azurewebsites.net' : 'http://localhost:5034';
-    const API_URL = `${API_BASE}/api/Auth/login`;
+    // ✅ Get the intended role from the URL (staff or patient)
+    const urlParams = new URLSearchParams(window.location.search);
+    const intendedRole = urlParams.get('role'); // 'staff' or 'patient'
+
+    // ✅ Use the ngrok backend URL
+    const API_URL = `https://uninstall-palpitate-reprint.ngrok-free.dev/api/Auth/login`;
 
     function isEmailValid(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()); }
     function isRequired(value) { return value !== null && value !== undefined && String(value).trim().length > 0; }
+    
     function showFieldError(el, msg) {
         clearFieldError(el);
         el.classList.add('input-error');
@@ -19,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         span.textContent = msg;
         el.insertAdjacentElement('afterend', span);
     }
+
     function clearFieldError(el) {
         el.classList.remove('input-error');
         const s = el.nextElementSibling;
@@ -37,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isRequired(passwordInput.value))    { showFieldError(passwordInput,  'Password cannot be empty.'); ok = false; }
         if (!ok) return;
 
-        // UI Loading State - adding spinner makes it psychologically feel faster
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
         loginBtn.disabled = true;
         errorMessage.style.display = 'none';
@@ -50,9 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
@@ -62,20 +64,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             
-            // Extract token and role from the response
             const token = data.token;
-            const roleId = data.roleId;
+            const roleId = data.roleId; // 1=Admin, 2=Doctor, 3=Patient
             
-            // Save to localStorage so admin.html can use it!
+            // 🔥 ROLE-BASED RESTRICTION (Security Check)
+            if (intendedRole === 'staff' && roleId === 3) {
+                throw new Error('Access Denied: Patients cannot log in through the Staff portal.');
+            }
+            if (intendedRole === 'patient' && (roleId === 1 || roleId === 2)) {
+                throw new Error('Access Denied: Staff members must use the Staff Login portal.');
+            }
+
+            // Save session
             localStorage.setItem('hospital_jwt', token);
             localStorage.setItem('hospital_role', roleId);
             
-            // Redirect to the Dashboard
-            window.location.href = 'admin.html';
+            // Redirect based on role
+            if (roleId === 3) {
+                window.location.href = 'admin.html'; // Patient Dashboard
+            } else {
+                window.location.href = 'admin.html'; // Admin/Doc Dashboard (logic handles it there)
+            }
 
         } catch (error) {
             console.error('Login Error:', error);
-            errorMessage.textContent = 'Invalid email or password. Please try again.';
+            errorMessage.textContent = error.message || 'Invalid email or password.';
             errorMessage.style.display = 'block';
         } finally {
             loginBtn.innerHTML = 'Sign In';
