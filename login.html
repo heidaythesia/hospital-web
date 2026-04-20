@@ -3,118 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusHealth | Login</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Modern Hospital | Secure Login</title>
+    <link rel="stylesheet" href="style.css?v=elite_v1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .login-page {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(16px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.4);
-        }
-        .login-card .logo {
-            color: #2563eb;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #475569;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        .form-group input:focus {
-            border-color: #3b82f6;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-login:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-        }
-        #errorMessage {
-            color: #ef4444;
-            font-size: 0.9rem;
-            margin-top: 15px;
-            display: none;
-        }
-    </style>
 </head>
-<body class="login-page">
+<body class="auth-page">
 
-    <div class="login-card" style="position: relative;">
-        <!-- Back Button Inside Card -->
-        <a href="index.html" style="position: absolute; top: 20px; left: 20px; width: 36px; height: 36px; background-color: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);" onmouseover="this.style.transform='scale(1.1) translateY(-2px)'; this.style.backgroundColor='#1d4ed8';" onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.backgroundColor='#2563eb';">
-            <i class="fas fa-arrow-left"></i>
+    <div class="auth-card">
+        <a href="index.html" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--primary); font-weight: 700; margin-bottom: 24px;">
+            <i class="fas fa-arrow-left"></i> Back to Home
         </a>
 
-        <div class="logo" style="margin-top: 15px;">
-            <i class="fas fa-heartbeat"></i>
-            <span>Nexus<strong>Health</strong></span>
+        <div class="logo" style="justify-content: center; margin-bottom: 24px;">
+            <i class="fas fa-hospital-symbol"></i>
+            <span>Modern <strong>Hospital</strong></span>
         </div>
         
-        <h2>Welcome Back</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Please enter your details to sign in.</p>
+        <h2 id="loginTitle">Secure Login</h2>
+        <p id="loginSubtitle" style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Welcome back. Please enter your credentials to access your portal.</p>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" required placeholder="Enter your email address">
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="Enter your password">
+                <label>Email Address</label>
+                <input type="email" id="email" required placeholder="name@example.com">
             </div>
 
-            <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
-            <div id="errorMessage">Invalid email or password.</div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; margin-top: 16px;">Sign In</button>
+            <div id="message" style="margin-top: 16px; text-align: center;"></div>
             
-            <p style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">
-                Need a medical account? <a href="register.html" style="color: #2563eb; font-weight: 600;">Register as Patient</a>
+            <p id="registerLinkArea" style="margin-top: 32px; text-align: center; font-size: 0.95rem; color: var(--text-muted);">
+                New to Modern Hospital? <a href="register.html" style="color: var(--primary); font-weight: 700;">Create Account</a>
             </p>
         </form>
     </div>
