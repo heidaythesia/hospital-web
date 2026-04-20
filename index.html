@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modern and Trustworthy Hospital - Providing world-class healthcare.">
+    <title>Modern Hospital | World-Class Healthcare</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> Emergency: 911</span>
+                <span><i class="fas fa-envelope"></i> info@modernhospital.com</span>
+            </div>
+            <div class="quick-links" id="topbarLinks">
+                <!-- Dynamically populated by JS based on Auth state -->
+                <a href="login.html">Patient Portal</a>
+                <a href="#">Careers</a>
+                <a href="login.html">Staff Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-hospital-symbol"></i>
+                <span>Modern <strong>Hospital</strong></span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="doctors.html">Doctors</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions" id="headerActions">
+                <button class="btn btn-primary" onclick="handleBookAppointment()">Book Appointment</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="about" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1>Compassionate Care, <br>Advanced Medicine.</h1>
+            <p>Your health is our priority. We provide world-class medical care with a focus on patient well-being and cutting-edge technology.</p>
+            <div class="hero-buttons">
+                <a href="doctors.html" class="btn btn-primary btn-large">Find a Doctor</a>
+                <a href="#services" class="btn btn-secondary btn-large">Our Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section id="services" class="services section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Medical Services</h2>
+                <p>Comprehensive care tailored to your needs.</p>
+            </div>
+            <div class="services-grid">
+                <!-- Cardiology -->
+                <div class="service-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Cardiology</h3>
+                    <p>Expert heart care with state-of-the-art diagnostics and treatments.</p>
+                    <a href="#" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <!-- Neurology -->
+                <div class="service-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Neurology</h3>
+                    <p>Advanced care for conditions affecting the brain and nervous system.</p>
+                    <a href="#" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <!-- Pediatrics -->
+                <div class="service-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h3>Pediatrics</h3>
+                    <p>Compassionate care for infants, children, and adolescents.</p>
+                    <a href="#" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <!-- Orthopedics -->
+                <div class="service-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-bone"></i>
+                    </div>
+                    <h3>Orthopedics</h3>
+                    <p>Specialized treatments for bone, joint, and muscle conditions.</p>
+                    <a href="#" class="service-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Patient Portal CTA -->
+    <section class="portal-cta section">
+        <div class="container portal-content">
+            <div class="portal-text">
+                <h2>Manage Your Health Online</h2>
+                <p>Access your medical records, communicate with your doctor, and request prescription refills easily through our secure Patient Portal.</p>
+                <a href="login.html" class="btn btn-primary">Login to Patient Portal</a>
+            </div>
+            <div class="portal-image-placeholder">
+                <i class="fas fa-laptop-medical"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <div class="logo footer-logo">
+                    <i class="fas fa-hospital-symbol"></i>
+                    <span>Modern <strong>Hospital</strong></span>
+                </div>
+                <p>Providing exceptional healthcare services with a commitment to excellence.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Find a Doctor</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Health Ave, Medical City, MC 12345</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                <p><i class="fas fa-envelope"></i> info@modernhospital.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Modern Hospital. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:white; padding:30px; border-radius:15px; width:100%; max-width:400px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3>Book an Appointment</h3>
+                <button onclick="ui.closeBookingModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <form id="bookingForm">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px;">Select Doctor</label>
+                    <select id="doctorId" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                        <option value="2">Dr. Sarah Jenkins (Neurology)</option>
+                        <option value="3">Dr. Robert Chen (Cardiology)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:5px;">Appointment Date</label>
+                    <input type="datetime-local" id="appointmentDate" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modular JS -->
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

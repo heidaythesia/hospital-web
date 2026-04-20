@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Doctor | NexusHealth</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .doctors-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .doctors-header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 60px 0;
+        }
+        .doctor-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .doctor-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        .doctor-avatar {
+            height: 150px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 4rem;
+        }
+        .doctor-info {
+            padding: 25px;
+        }
+        .doctor-info h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-dark);
+            font-size: 1.25rem;
+        }
+        .doctor-specialty {
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .doctor-actions {
+            margin-top: 20px;
+        }
+        #loadingDoctors {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> Emergency: 911</span>
+                <span><i class="fas fa-envelope"></i> info@modernhospital.com</span>
+            </div>
+            <div class="quick-links" id="topbarLinks">
+                <a href="login.html">Patient Portal</a>
+                <a href="#">Careers</a>
+                <a href="login.html">Staff Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-hospital-symbol"></i>
+                    <span>Modern <strong>Hospital</strong></span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="doctors.html" class="active">Doctors</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions" id="headerActions">
+                <button class="btn btn-primary" onclick="handleBookAppointment()">Book Appointment</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="doctors-header">
+        <div class="container">
+            <h1>Our Medical Specialists</h1>
+            <p>Find the right expert for your healthcare needs.</p>
+        </div>
+    </div>
+
+    <main class="container">
+        <div id="loadingDoctors">
+            <i class="fas fa-spinner fa-spin"></i> Loading our specialists...
+        </div>
+        <div class="doctors-grid" id="doctorsContainer">
+            <!-- Doctors injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Footer (Simplified) -->
+    <footer class="footer" style="margin-top: auto;">
+        <div class="footer-bottom">
+            <p>&copy; 2026 Modern Hospital API. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('doctorsContainer');
+            const loading = document.getElementById('loadingDoctors');
+
+            try {
+                const response = await fetch('https://localhost:44304/api/Patient/doctors');
+                if (!response.ok) throw new Error('Failed to fetch doctors');
+                
+                const doctors = await response.json();
+                loading.style.display = 'none';
+
+                if (doctors.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">No doctors available at the moment.</p>';
+                    return;
+                }
+
+                doctors.forEach(doc => {
+                    const card = document.createElement('div');
+                    card.className = 'doctor-card';
+                    const namePrefix = doc.doctorName.toLowerCase().startsWith('dr') ? '' : 'Dr. ';
+                    card.innerHTML = `
+                        <div class="doctor-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="doctor-info">
+                            <h3>${namePrefix}${doc.doctorName}</h3>
+                            <span class="doctor-specialty">${doc.specialization}</span>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);"><i class="fas fa-star" style="color:#fbbf24;"></i> 4.9 (120+ Reviews)</p>
+                            <div class="doctor-actions">
+                                <button class="btn btn-outline" style="width: 100%;" onclick="handleBookAppointment()">Book Consultation</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                loading.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i> Failed to load doctors. Please try again later.';
+            }
+        });
+    </script>
+</body>
+</html>

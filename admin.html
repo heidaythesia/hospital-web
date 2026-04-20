@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusHealth | Hospital Management System</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation (built dynamically by JS) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <div class="icon"><i class="fas fa-heartbeat"></i></div>
+                    <span class="brand-text">NexusHealth</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
+            <ul class="sidebar-nav" id="sidebarNav">
+                <!-- JS will inject role-specific items here -->
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" style="color: var(--danger); margin-top: 8px;" onclick="logout(event)">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search patients, doctors, or appointments...">
+                </div>
+                <div class="topbar-actions">
+                    <button class="action-btn" title="Notifications">
+                        <i class="far fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="action-btn" title="Messages">
+                        <i class="far fa-envelope"></i>
+                    </button>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=User&background=eff6ff&color=2563eb" alt="User" class="avatar" id="userAvatar">
+                        <div class="user-info">
+                            <span class="user-name" id="userNameDisplay">User</span>
+                            <span class="user-role" id="userRoleDisplay">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area - All sections go here -->
+            <div class="content-area" id="dashboardContent">
+
+                <!-- ============================== -->
+                <!-- ADMIN DASHBOARD VIEW (Role 1)  -->
+                <!-- ============================== -->
+                <div id="adminDashboardView" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title">
+                            <h1>System Administrator Dashboard</h1>
+                            <p>Overview of hospital operations, staff, and patients.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openCreateDoctorModal()">
+                            <i class="fas fa-user-md"></i> Add Doctor
+                        </button>
+                    </div>
+                    <div class="kpi-grid">
+                        <div class="glass-card animate-fade-in delay-1">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Doctors</span>
+                                <div class="kpi-icon icon-blue"><i class="fas fa-user-md"></i></div>
+                            </div>
+                            <div class="kpi-value" id="kpi-admin-doctors">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-stethoscope"></i><span>Staff</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-2">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Patients</span>
+                                <div class="kpi-icon icon-green"><i class="fas fa-user-injured"></i></div>
+                            </div>
+                            <div class="kpi-value" id="kpi-admin-patients">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-chart-line"></i><span>Registered</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-3">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Appointments</span>
+                                <div class="kpi-icon icon-orange"><i class="fas fa-calendar-check"></i></div>
+                            </div>
+                            <div class="kpi-value" id="kpi-admin-appointments">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-hospital"></i><span>Hospital wide</span></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="glass-card animate-fade-in delay-3" style="grid-column: 1 / -1;">
+                            <div class="card-header">
+                                <h3 class="card-title">Recent Appointments</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead><tr><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Status</th></tr></thead>
+                                    <tbody id="admin-dash-appointments-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Doctors Management -->
+                <div id="section-admin-doctors" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>Doctors Management</h1><p>View and manage all registered doctors.</p></div>
+                        <button class="btn-primary" onclick="openCreateDoctorModal()"><i class="fas fa-plus"></i> Add New Doctor</button>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-toolbar">
+                            <input type="text" id="admin-doctors-search" class="table-search" placeholder="Search by name, specialization..." oninput="filterDoctorsTable(this.value)">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Name</th><th>Specialization</th><th>Email</th><th>Consultation Fee</th><th>Actions</th></tr></thead>
+                                <tbody id="admin-doctors-tbody"><tr><td colspan="5" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Patients Directory -->
+                <div id="section-admin-patients" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>Patient Directory</h1><p>View all registered patients.</p></div>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-toolbar">
+                            <input type="text" id="admin-patients-search" class="table-search" placeholder="Search by name or email..." oninput="filterPatientsTable(this.value)">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Name</th><th>Gender</th><th>Date of Birth</th><th>Email</th></tr></thead>
+                                <tbody id="admin-patients-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: All Appointments -->
+                <div id="section-admin-appointments" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>All Appointments</h1><p>Hospital-wide appointment registry.</p></div>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-toolbar">
+                            <input type="text" id="admin-appt-search" class="table-search" placeholder="Search patient or doctor..." oninput="filterAdminAppointments()">
+                            <select id="admin-appt-filter" class="filter-control" onchange="filterAdminAppointments()">
+                                <option value="">All Statuses</option>
+                                <option value="Booked">Pending</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Patient</th><th>Doctor</th><th>Date &amp; Time</th><th>Status</th></tr></thead>
+                                <tbody id="admin-appointments-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Reports & Analytics -->
+                <div id="section-admin-reports" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>Reports & Analytics</h1><p>Comprehensive system insights and decision support.</p></div>
+                        <div style="display:flex; gap:10px;">
+                            <select id="reportFilterStatus" class="filter-control" onchange="applyReportFilters()">
+                                <option value="">All Statuses</option>
+                                <option value="Booked">Booked</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <input type="date" id="reportFilterDate" class="filter-control" onchange="applyReportFilters()">
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="glass-card animate-fade-in delay-1">
+                            <div class="kpi-header"><span class="kpi-title">Total</span><div class="kpi-icon icon-blue"><i class="fas fa-calendar-alt"></i></div></div>
+                            <div class="kpi-value" id="kpi-report-total">-</div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-2">
+                            <div class="kpi-header"><span class="kpi-title">Completed</span><div class="kpi-icon icon-green"><i class="fas fa-check-double"></i></div></div>
+                            <div class="kpi-value" id="kpi-report-completed">-</div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-3">
+                            <div class="kpi-header"><span class="kpi-title">Cancelled</span><div class="kpi-icon icon-red" style="color:var(--danger); background:var(--danger-light);"><i class="fas fa-ban"></i></div></div>
+                            <div class="kpi-value" id="kpi-report-cancelled">-</div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-4">
+                            <div class="kpi-header"><span class="kpi-title">Completion Rate</span><div class="kpi-icon icon-orange"><i class="fas fa-percentage"></i></div></div>
+                            <div class="kpi-value" id="kpi-report-rate">-</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="glass-card animate-fade-in delay-2">
+                            <div class="card-header"><h3 class="card-title">Appointments by Status</h3></div>
+                            <div style="position: relative; height:250px; width:100%; display:flex; justify-content:center;">
+                                <canvas id="chartApptStatus"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-3">
+                            <div class="card-header"><h3 class="card-title">Top Doctors (Appointments)</h3></div>
+                            <div style="position: relative; height:250px; width:100%;">
+                                <canvas id="chartDocPerf"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-4" style="grid-column: 1 / -1;">
+                            <div class="card-header"><h3 class="card-title">Filtered Report Data</h3></div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead><tr><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Status</th></tr></thead>
+                                    <tbody id="report-table-tbody"><tr><td colspan="4" style="text-align:center">Loading data...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================== -->
+                <!-- DOCTOR DASHBOARD VIEW (Role 2) -->
+                <!-- ============================== -->
+                <div id="doctorDashboardView" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title">
+                            <h1>Dashboard Overview</h1>
+                            <p>Welcome back, <span id="doctorWelcomeName">Doctor</span>. Here is what's happening today.</p>
+                        </div>
+                    </div>
+                    <div class="kpi-grid">
+                        <div class="glass-card animate-fade-in delay-1">
+                            <div class="kpi-header"><span class="kpi-title">Total Patients</span><div class="kpi-icon icon-blue"><i class="fas fa-users"></i></div></div>
+                            <div class="kpi-value" id="kpi-doc-patients">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-user-check"></i><span>Unique</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-2">
+                            <div class="kpi-header"><span class="kpi-title">Today's Appointments</span><div class="kpi-icon icon-orange"><i class="fas fa-clock"></i></div></div>
+                            <div class="kpi-value" id="kpi-doc-today">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i><span>For today</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-3">
+                            <div class="kpi-header"><span class="kpi-title">Pending Appointments</span><div class="kpi-icon icon-orange"><i class="fas fa-hourglass-half"></i></div></div>
+                            <div class="kpi-value" id="kpi-doc-pending">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-exclamation-circle"></i><span>Require action</span></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="glass-card animate-fade-in delay-3" style="grid-column: 1 / -1;">
+                            <div class="card-header"><h3 class="card-title">Recent Appointments</h3></div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead><tr><th>Patient</th><th>Date & Time</th><th>Status</th><th>Action</th></tr></thead>
+                                    <tbody id="doctor-dash-appointments-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor: My Appointments (full list with status update) -->
+                <div id="section-doctor-appointments" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>My Appointments</h1><p>Manage your assigned patient appointments.</p></div>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-toolbar">
+                            <select id="doctor-appt-filter" class="filter-control" onchange="filterDoctorAppointments()">
+                                <option value="">All Statuses</option>
+                                <option value="Booked">Pending</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Patient Name</th><th>Gender</th><th>Age</th><th>Date &amp; Time</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody id="doctor-appointments-tbody"><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================== -->
+                <!-- PATIENT DASHBOARD VIEW (Role 3) -->
+                <!-- =============================== -->
+                <div id="patientDashboardView" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title">
+                            <h1>My Health Portal</h1>
+                            <p>Welcome back! Here are your recent medical records.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openBookingModal()">
+                            <i class="fas fa-calendar-plus"></i> Book Appointment
+                        </button>
+                    </div>
+                    <div class="kpi-grid">
+                        <div class="glass-card animate-fade-in delay-1">
+                            <div class="kpi-header"><span class="kpi-title">Total Appointments</span><div class="kpi-icon icon-blue"><i class="fas fa-calendar-check"></i></div></div>
+                            <div class="kpi-value" id="kpi-pat-total">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-history"></i><span>All time</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-2">
+                            <div class="kpi-header"><span class="kpi-title">Upcoming</span><div class="kpi-icon icon-orange"><i class="fas fa-clock"></i></div></div>
+                            <div class="kpi-value" id="kpi-pat-upcoming">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i><span>Scheduled</span></div>
+                        </div>
+                        <div class="glass-card animate-fade-in delay-3">
+                            <div class="kpi-header"><span class="kpi-title">Completed</span><div class="kpi-icon icon-green"><i class="fas fa-check-double"></i></div></div>
+                            <div class="kpi-value" id="kpi-pat-completed">-</div>
+                            <div class="kpi-trend trend-up"><i class="fas fa-thumbs-up"></i><span>Done</span></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="glass-card animate-fade-in delay-3" style="grid-column: 1 / -1;">
+                            <div class="card-header"><h3 class="card-title">Recent Appointments</h3></div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead><tr><th>Doctor</th><th>Specialization</th><th>Date & Time</th><th>Status</th></tr></thead>
+                                    <tbody id="patient-dash-appointments-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient: My Appointments (full) -->
+                <div id="section-patient-appointments" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>My Appointments</h1><p>View all your booked appointments.</p></div>
+                        <button class="btn-primary" onclick="openBookingModal()"><i class="fas fa-calendar-plus"></i> Book Appointment</button>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Doctor</th><th>Specialization</th><th>Date & Time</th><th>Status</th></tr></thead>
+                                <tbody id="patient-appointments-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient: My Prescriptions -->
+                <div id="section-patient-prescriptions" class="page-section" style="display:none;">
+                    <div class="page-header animate-fade-in">
+                        <div class="page-title"><h1>My Prescriptions</h1><p>View prescriptions issued by your doctors.</p></div>
+                    </div>
+                    <div class="glass-card animate-fade-in delay-1">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead><tr><th>Date</th><th>Doctor</th><th>Medicine</th><th>Instructions</th></tr></thead>
+                                <tbody id="patient-prescriptions-tbody"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content-area -->
+        </main>
+    </div> <!-- End app-container -->
+
+    <!-- ============== MODALS ============== -->
+
+    <!-- Create Doctor Modal (Admin) -->
+    <div class="modal-overlay" id="createDoctorModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
+        <div class="glass-card animate-fade-in" style="width:90%; max-width:500px; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0;">Register New Doctor</h3>
+                <button class="btn-icon" onclick="closeCreateDoctorModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="createDoctorForm">
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Doctor Name</label><input type="text" id="adminDocName" required placeholder="Dr. John Doe" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Email</label><input type="email" id="adminDocEmail" required placeholder="doctor@hospital.com" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Temporary Password</label><input type="password" id="adminDocPass" required placeholder="Min 6 characters" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Specialization</label><input type="text" id="adminDocSpec" required placeholder="e.g. Cardiologist" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Consultation Fees ($)</label><input type="number" id="adminDocFees" required placeholder="e.g. 150" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-outline" onclick="closeCreateDoctorModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="createDocSubmitBtn">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prescription Modal (Doctor) -->
+    <div class="modal-overlay" id="prescriptionModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
+        <div class="glass-card animate-fade-in" style="width:90%; max-width:500px; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0;">Issue Prescription</h3>
+                <button class="btn-icon" onclick="closePrescriptionModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="prescriptionForm">
+                <input type="hidden" id="prescAppointmentId">
+                <p style="margin-bottom:15px; font-weight:500;">Patient: <strong id="prescPatientName"></strong></p>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Medicine Name</label><input type="text" id="prescMedicine" required placeholder="e.g. Amoxicillin 500mg" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Instructions & Notes</label><textarea id="prescNotes" rows="3" placeholder="e.g. Take twice daily after meals" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></textarea></div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-outline" onclick="closePrescriptionModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="prescSubmitBtn">Submit Prescription</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Modal (Patient) -->
+    <div class="modal-overlay" id="bookingModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
+        <div class="glass-card animate-fade-in" style="width:90%; max-width:500px; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0;">Book an Appointment</h3>
+                <button class="btn-icon" onclick="closeBookingModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="bookingForm">
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Select Doctor</label><select id="bookingDoctorId" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><option value="">Loading doctors...</option></select></div>
+                <div style="margin-bottom:15px;"><label style="display:block; margin-bottom:5px; font-weight:500;">Appointment Date & Time</label><input type="datetime-local" id="bookingDate" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-outline" onclick="closeBookingModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="bookingSubmitBtn">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog Modal -->
+    <div class="confirm-overlay" id="confirmModal">
+        <div class="confirm-box">
+            <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 id="confirmTitle">Confirm Action</h3>
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="confirm-actions">
+                <button class="btn-outline" id="confirmNoBtn">Cancel</button>
+                <button class="btn-danger" id="confirmYesBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
