@@ -117,7 +117,7 @@ function updateAuthUI() {
 window.logout = function(e) {
     if(e) e.preventDefault();
     localStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 };
 
 window.handleError = async function(response) {

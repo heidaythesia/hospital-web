@@ -9,6 +9,6 @@ const auth = {
     logout: () => {
         localStorage.removeItem('hospital_jwt');
         localStorage.removeItem('hospital_role');
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 };

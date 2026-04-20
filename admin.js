@@ -27,7 +27,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 
     try {
         const res = await fetch(`${API_BASE}${endpoint}`, opts);
-        if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return null; }
+        if (res.status === 401) { localStorage.clear(); window.location.href = 'index.html'; return null; }
         if (res.status === 403) { triggerToast('Access Denied.', 'error'); return null; }
         if (res.status >= 500) { triggerToast('Server error. Please try again.', 'error'); return null; }
         if (!res.ok) {
@@ -772,7 +772,7 @@ async function handleBooking(e) {
 window.logout = async function(e) {
     if (e) e.preventDefault();
     const ok = await confirmDialog('Are you sure you want to log out?', 'Log Out', 'Log Out', true);
-    if (ok) { localStorage.clear(); window.location.href = 'login.html'; }
+    if (ok) { localStorage.clear(); window.location.href = 'index.html'; }
 };
 
 // ─── ADMIN FILTER FUNCTIONS ──────────────────────────────────

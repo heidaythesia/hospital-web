@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
-    const errorMessage = document.getElementById('errorMessage');
+    const messageDiv = document.getElementById('message');
     const loginBtn = document.getElementById('loginBtn');
 
     // ✅ Get the intended role from the URL (staff or patient)
@@ -20,6 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
         el.classList.add('input-error');
         const span = document.createElement('span');
         span.className = 'field-error-msg';
+        span.style.color = '#ef4444';
+        span.style.fontSize = '0.8rem';
+        span.style.marginTop = '4px';
+        span.style.display = 'block';
         span.textContent = msg;
         el.insertAdjacentElement('afterend', span);
     }
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
         loginBtn.disabled = true;
-        errorMessage.style.display = 'none';
+        messageDiv.style.display = 'none';
 
         const payload = {
             email: emailInput.value.trim(),
@@ -59,7 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Invalid credentials');
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || 'Invalid email or password.');
             }
 
             const data = await response.json();
@@ -80,16 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('hospital_role', roleId);
             
             // Redirect based on role
-            if (roleId === 3) {
-                window.location.href = 'admin.html'; // Patient Dashboard
-            } else {
-                window.location.href = 'admin.html'; // Admin/Doc Dashboard (logic handles it there)
-            }
+            window.location.href = 'admin.html';
 
         } catch (error) {
             console.error('Login Error:', error);
-            errorMessage.textContent = error.message || 'Invalid email or password.';
-            errorMessage.style.display = 'block';
+            messageDiv.textContent = error.message;
+            messageDiv.style.color = '#ef4444';
+            messageDiv.style.display = 'block';
         } finally {
             loginBtn.innerHTML = 'Sign In';
             loginBtn.disabled = false;
