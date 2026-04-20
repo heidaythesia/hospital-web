@@ -3,55 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusHealth | Create Patient Account</title>
-    <link rel="stylesheet" href="style.css?v=elite_v1">
+    <title>NexusHealth | Create Account</title>
+    <link rel="stylesheet" href="style.css?v=6">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="auth-page">
 
-    <div class="auth-card">
-        <a href="index.html" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--primary); font-weight: 700; margin-bottom: 24px;">
-            <i class="fas fa-arrow-left"></i> Back to Home
+    <div class="auth-card" style="position: relative;">
+        <!-- Back Button Inside Card -->
+        <a href="login.html" style="position: absolute; top: 24px; left: 24px; width: 40px; height: 40px; background-color: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; box-shadow: var(--shadow-md);">
+            <i class="fas fa-arrow-left"></i>
         </a>
 
         <div class="logo" style="justify-content: center; margin-bottom: 24px;">
             <i class="fas fa-hospital-symbol"></i>
-            <span>Modern <strong>Hospital</strong></span>
+            <span>Nexus<strong>Health</strong></span>
         </div>
         
-        <h2>Join Our Community</h2>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Create your secure patient account to book appointments and view records.</p>
+        <h2 style="text-align: center; margin-bottom: 8px;">Join NexusHealth</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">Create your patient account to book appointments.</p>
 
         <form id="registerForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Full Name</label>
-                    <input type="text" id="userName" required placeholder="Enter your full name">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Full Name</label>
+                    <input type="text" id="userName" required placeholder="Enter your full name" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
                 
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
 
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Password</label>
-                    <input type="password" id="password" required placeholder="Min 6 characters">
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Password</label>
+                    <input type="password" id="password" required placeholder="At least 6 characters" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
 
-                <div class="form-group">
-                    <label>First Name</label>
-                    <input type="text" id="firstName" required placeholder="First Name">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">First Name</label>
+                    <input type="text" id="firstName" required placeholder="First Name" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
 
-                <div class="form-group">
-                    <label>Last Name</label>
-                    <input type="text" id="lastName" required placeholder="Last Name">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Last Name</label>
+                    <input type="text" id="lastName" required placeholder="Last Name" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
 
-                <div class="form-group">
-                    <label>Gender</label>
-                    <select id="gender" required>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Gender</label>
+                    <select id="gender" required style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                         <option value="" disabled selected>Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -59,21 +60,21 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Date of Birth</label>
-                    <input type="date" id="dateOfBirth" required>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" required style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="regBtn" style="width: 100%; margin-top: 24px;">Create Account</button>
+            <button type="submit" id="regBtn" style="width: 100%; margin-top: 32px; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Create Account</button>
             <div id="message" style="margin-top: 16px; text-align: center;"></div>
             
-            <p style="margin-top: 32px; text-align: center; font-size: 0.95rem; color: var(--text-muted);">
-                Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 700;">Sign In</a>
+            <p style="margin-top: 24px; text-align: center; font-size: 0.95rem; color: var(--text-muted);">
+                Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign In</a>
             </p>
         </form>
     </div>
 
-    <script src="register.js?v=2"></script>
+    <script src="register.js?v=3"></script>
 </body>
 </html>
